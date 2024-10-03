@@ -36,34 +36,33 @@ translateButton.style.cssText = `
   cursor: pointer;
 `;
 
-window.addEventListener("load", (event) => {
-  setTimeout(() => {
-    const inputContainer = document.getElementsByClassName(
-      `lexical-rich-text-input`
-    )[0];
-    console.log(inputContainer, "inputContainer");
-    if (inputContainer) {
-      inputContainer.appendChild(translateButton);
+const renderTranslateButton = () => {
+  const inputContainer = document.getElementsByClassName(
+    `lexical-rich-text-input`
+  )[0];
+  if (inputContainer) {
+    inputContainer.appendChild(translateButton);
 
-      translateButton.addEventListener("click", () => {
-        const messageText = inputContainer.children[0].innerText;
-        console.log(messageText, "messageText");
-        chrome.storage.sync.get("preferredLang", ({ preferredLang }) => {
-          if (preferredLang) {
-            console.log(preferredLang, "preferredLang");
-            translateInputMessage(messageText, preferredLang, inputContainer);
-          }
-        });
+    translateButton.addEventListener("click", () => {
+      const messageText = inputContainer.children[0].innerText;
+      console.log(messageText, "messageText");
+      chrome.storage.sync.get("preferredLang", ({ preferredLang }) => {
+        if (preferredLang) {
+          console.log(preferredLang, "preferredLang");
+          translateInputMessage(messageText, preferredLang, inputContainer);
+        }
       });
-    }
-  }, 5000);
+    });
+  } else {
+    console.error("Pref Lang not found");
+    setTimeout(renderTranslateButton, 100);
+  }
+};
+window.addEventListener("load", () => {
+  renderTranslateButton();
 });
 
-const translateInputMessage = async (
-  messageText,
-  targetLang,
-  inputContainer
-) => {
+const translateInputMessage = async (messageText, targetLang) => {
   try {
     const response = await new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(
@@ -77,17 +76,25 @@ const translateInputMessage = async (
         }
       );
     });
-
     if (response.error) {
       console.error(response.error);
       return;
     }
-
     console.log(response, "response");
     const translatedText = response.translatedText;
-    if (inputContainer) {
-      inputContainer.innerText = translatedText;
-    }
+    const replaceTag = document.getElementsByClassName(
+      "selectable-text copyable-text x15bjb6t x1n2onr6"
+    )[0];
+    const observer = new MutationObserver(() => {
+      replaceTag.textContent = translatedText;
+    });
+    observer.observe(replaceTag, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+    replaceTag.textContent = translatedText;
+    setTimeout(() => observer.disconnect(), 1000);
   } catch (error) {
     console.error("Translation error:", error);
   }
