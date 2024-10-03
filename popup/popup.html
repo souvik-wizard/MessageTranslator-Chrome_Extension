@@ -3,20 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WhatsApp Translator</title>
+  <title>Message Translator</title>
+  <link rel="icon" type="image/png" href="/assets/icon.png">
   <link href="../index.css" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <script src="tailwind.js"></script>
 </head>
-<body class="p-4">
-  <div>
+<body class="p-4 w-[440px]">
+  <div id="messageBox" class="hidden text-red-500 text-sm font-bold mb-2"></div> 
+  
+  <div id="languageSection">
     <label for="langSelect" class="block text-gray-700 text-sm font-bold mb-2">Select Language:</label>
-    <select id="languages" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight">
-    </select>
+    <select id="languages" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"></select>
   </div>
+
   <div class="mt-4">
     <button id="saveBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save</button>
   </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>

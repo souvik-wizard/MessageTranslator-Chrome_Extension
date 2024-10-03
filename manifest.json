@@ -4,15 +4,17 @@
   "version": "1.0",
   "description": "Translate WhatsApp chats and send messages in different languages",
   "permissions": [
+    "storage",
+    "tabs",
     "activeTab",
-    "scripting",
-    "storage"
+    "scripting"
   ],
+
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "./background/background.js"
   },
   "action": {
-    "default_popup": "popup/popup.html",
+    "default_popup": "./popup/popup.html",
     "default_icon": {
       "16": "assets/icon.png",
       "48": "assets/icon.png",
@@ -22,9 +24,13 @@
   "content_scripts": [
     {
       "matches": ["https://web.whatsapp.com/*"],
-      "js": ["content/content.js"]
+      "js": ["./content/contentScript.js"],
+      "run_at": "document_start"
     }
   ],
+  "externally_connectable": {
+    "matches": ["*://*.google.com/*"]
+},
   "icons": {
     "16": "assets/icon.png",
     "48": "assets/icon.png",
@@ -32,5 +38,8 @@
   },
   "host_permissions": [
     "https://microsoft-translator-text-api3.p.rapidapi.com/*"
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
 }
