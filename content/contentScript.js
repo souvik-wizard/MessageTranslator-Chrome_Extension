@@ -1,24 +1,24 @@
 console.log("Hello from contentScript.js");
 
-const translateMessage = (messageText, targetLang) => {
-  chrome.runtime.sendMessage(
-    { action: "translate", text: messageText, targetLang },
-    (response) => {
-      if (response?.error) {
-        console.error(response.error);
-        return;
-      }
-      const translatedText = response.translatedText;
-      // Modify DOM with translated message
-      const messageElements = document.querySelectorAll(".selectable-text");
-      messageElements.forEach((element) => {
-        if (element.innerText === messageText) {
-          element.innerText = translatedText;
-        }
-      });
-    }
-  );
-};
+// const translateMessage = (messageText, targetLang) => {
+//   chrome.runtime.sendMessage(
+//     { action: "translate", text: messageText, targetLang },
+//     (response) => {
+//       if (response?.error) {
+//         console.error(response.error);
+//         return;
+//       }
+//       const translatedText = response.translatedText;
+//       // Modify DOM with translated message
+//       const messageElements = document.querySelectorAll(".selectable-text");
+//       messageElements.forEach((element) => {
+//         if (element.innerText === messageText) {
+//           element.innerText = translatedText;
+//         }
+//       });
+//     }
+//   );
+// };
 
 // Create the translate button
 const translateButton = document.createElement("button");
@@ -29,27 +29,25 @@ translateButton.style.cssText = `
   color: white;
   border: none;
   padding: 4px;
-  right: 0;
-  top: 0;
+  right: 60px;
+  top: 14px;
   position: absolute; 
   border-radius: 5px;
   cursor: pointer;
 `;
 
 const renderTranslateButton = () => {
-  const inputContainer = document.getElementsByClassName(
-    `lexical-rich-text-input`
-  )[0];
-  if (inputContainer) {
-    inputContainer.appendChild(translateButton);
+  const replaceTag = document.getElementsByClassName(`_ak1r`)[0];
+  if (replaceTag) {
+    replaceTag.appendChild(translateButton);
 
     translateButton.addEventListener("click", () => {
-      const messageText = inputContainer.children[0].innerText;
+      const messageText = replaceTag.children[0].innerText;
       console.log(messageText, "messageText");
       chrome.storage.sync.get("preferredLang", ({ preferredLang }) => {
         if (preferredLang) {
           console.log(preferredLang, "preferredLang");
-          translateInputMessage(messageText, preferredLang, inputContainer);
+          translateInputMessage(messageText, preferredLang);
         }
       });
     });
@@ -58,9 +56,6 @@ const renderTranslateButton = () => {
     setTimeout(renderTranslateButton, 100);
   }
 };
-window.addEventListener("load", () => {
-  renderTranslateButton();
-});
 
 const translateInputMessage = async (messageText, targetLang) => {
   try {
@@ -80,25 +75,86 @@ const translateInputMessage = async (messageText, targetLang) => {
       console.error(response.error);
       return;
     }
-    console.log(response, "response");
+
+    let isTranslating = false;
     const translatedText = response.translatedText;
-    const replaceTag = document.getElementsByClassName(
-      "selectable-text copyable-text x15bjb6t x1n2onr6"
-    )[0];
-    const observer = new MutationObserver(() => {
-      replaceTag.textContent = translatedText;
-    });
-    observer.observe(replaceTag, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
-    replaceTag.textContent = translatedText;
-    setTimeout(() => observer.disconnect(), 1000);
+    const replaceTag = document.querySelector(".x1hx0egp[data-tab='10']");
+
+    if (replaceTag && !isTranslating) {
+      isTranslating = true;
+
+      // Focus the input field
+      replaceTag.focus();
+
+      // Select all content and delete it to remove original text
+      document.execCommand("selectAll", false, null);
+      document.execCommand("delete", false, null);
+
+      // Insert translated text as if typed by user
+      document.execCommand("insertText", false, translatedText);
+
+      // Dispatch 'input' event to inform WhatsApp of the change
+      replaceTag.dispatchEvent(new InputEvent("input", { bubbles: true }));
+
+      setTimeout(() => {
+        isTranslating = false;
+      }, 1000);
+    }
   } catch (error) {
     console.error("Translation error:", error);
   }
 };
+
+const findParent = () => {
+  const targetNode = document.getElementsByClassName("_aigv _aigz")[1];
+  console.log(targetNode, "targetNode");
+  if (targetNode) {
+    const mutationObserver = new MutationObserver((mutations) => {
+      console.log(mutations, "mutations");
+    });
+
+    mutationObserver.observe(targetNode, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+  } else {
+    console.log("targetNode not found");
+    setTimeout(findParent, 1000);
+  }
+};
+
+window.addEventListener("load", () => {
+  renderTranslateButton();
+  findParent();
+});
+// const target = document.getElementsByClassName(
+//   "x1hx0egp x6ikm8r x1odjw0f x1k6rcq7 x6prxxf"
+// )[0];
+// console.log(target, "target");
+// const observer = new MutationObserver(callback);
+
+// observer.observe(target, { attributes: true, childList: true, subtree: true });
+
+// function callback(mutations) {
+//   mutations.forEach((mutation) => {
+//     console.log(
+//       `Attribute ${
+//         mutation.attributeName
+//       } changed to ${mutation.target.getAttribute(mutation.attributeName)}`
+//     );
+//   });
+// }
+
+// if (targetNode) {
+//   observer.observe(targetNode, {
+//     childList: true,
+//     subtree: true,
+//     attributes: true,
+//   });
+// } else {
+//   console.error("Target node not found");
+// }
 
 // Add event listener to the translate button
 // const translateButton = document.querySelector("#yourTranslateButtonId"); // Replace with your button's actual ID
