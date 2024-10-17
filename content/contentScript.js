@@ -1,5 +1,111 @@
 console.log("Hello from contentScript.js");
 
+const createTranslateButton = () => {
+  const translateButton = document.createElement("button");
+  translateButton.innerText = "Translate";
+  translateButton.id = "translateButton";
+  translateButton.style.cssText = `
+    background-color: #25D366;
+    color: white;
+    border: none;
+    padding: 4px;
+    right: 60px;
+    top: 14px;
+    position: absolute; 
+    border-radius: 5px;
+    cursor: pointer;
+  `;
+
+  const messageContainer = document.getElementsByClassName(`_ak1r`)[0];
+  translateButton.addEventListener("click", () => {
+    const messageText = messageContainer.children[0].innerText;
+    console.log(messageText, "messageText");
+
+    if (chrome.storage && chrome.storage.sync) {
+      chrome.storage.sync.get("preferredLang", ({ preferredLang }) => {
+        if (preferredLang) {
+          console.log(preferredLang, "preferredLang");
+          translateInputMessage(messageText, preferredLang);
+        } else {
+          console.log("No preferred language selected");
+        }
+      });
+    } else {
+      console.error("Chrome storage is not available");
+    }
+  });
+
+  return translateButton;
+};
+
+const renderTranslateButton = () => {
+  const replaceTag = document.getElementsByClassName("_ak1r")[0];
+  const existingButton = document.getElementById("translateButton");
+
+  if (replaceTag && !existingButton) {
+    const translateButton = createTranslateButton();
+    replaceTag.appendChild(translateButton);
+  }
+};
+
+// Monitor DOM for chat changes
+const observeChatChanges = () => {
+  const chatContainer = document.querySelector("#app");
+  if (chatContainer) {
+    const observer = new MutationObserver(() => {
+      renderTranslateButton();
+    });
+
+    observer.observe(chatContainer, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    });
+  }
+};
+
+// Translate input message function
+const translateInputMessage = async (messageText, targetLang) => {
+  try {
+    const response = await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        { action: "translate", text: messageText, targetLang },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(response);
+          }
+        }
+      );
+    });
+
+    if (response.error) {
+      console.error(response.error);
+      return;
+    }
+
+    const translatedText = response.translatedText;
+    const inputField = document.querySelector(".x1hx0egp[data-tab='10']");
+
+    if (inputField) {
+      inputField.focus();
+      document.execCommand("selectAll", false, null);
+      document.execCommand("delete", false, null);
+      document.execCommand("insertText", false, translatedText);
+      inputField.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    }
+  } catch (error) {
+    console.error("Translation error:", error);
+  }
+};
+
+// Start observing the DOM after the page is fully loaded
+window.addEventListener("load", () => {
+  renderTranslateButton(); // Render button for the first time
+  observeChatChanges(); // Start monitoring chat changes
+});
+
 // const translateMessage = (messageText, targetLang) => {
 //   chrome.runtime.sendMessage(
 //     { action: "translate", text: messageText, targetLang },
@@ -20,114 +126,6 @@ console.log("Hello from contentScript.js");
 //   );
 // };
 
-// Create the translate button
-const translateButton = document.createElement("button");
-translateButton.innerText = "Translate";
-translateButton.id = "translateButton";
-translateButton.style.cssText = `
-  background-color: #25D366;
-  color: white;
-  border: none;
-  padding: 4px;
-  right: 60px;
-  top: 14px;
-  position: absolute; 
-  border-radius: 5px;
-  cursor: pointer;
-`;
-
-const renderTranslateButton = () => {
-  const replaceTag = document.getElementsByClassName(`_ak1r`)[0];
-  if (replaceTag) {
-    replaceTag.appendChild(translateButton);
-
-    translateButton.addEventListener("click", () => {
-      const messageText = replaceTag.children[0].innerText;
-      console.log(messageText, "messageText");
-      chrome.storage.sync.get("preferredLang", ({ preferredLang }) => {
-        if (preferredLang) {
-          console.log(preferredLang, "preferredLang");
-          translateInputMessage(messageText, preferredLang);
-        }
-      });
-    });
-  } else {
-    console.error("Pref Lang not found");
-    setTimeout(renderTranslateButton, 100);
-  }
-};
-
-const translateInputMessage = async (messageText, targetLang) => {
-  try {
-    const response = await new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(
-        { action: "translate", text: messageText, targetLang },
-        (response) => {
-          if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError);
-          } else {
-            resolve(response);
-          }
-        }
-      );
-    });
-    if (response.error) {
-      console.error(response.error);
-      return;
-    }
-
-    let isTranslating = false;
-    const translatedText = response.translatedText;
-    const replaceTag = document.querySelector(".x1hx0egp[data-tab='10']");
-
-    if (replaceTag && !isTranslating) {
-      isTranslating = true;
-
-      // Focus the input field
-      replaceTag.focus();
-
-      // Select all content and delete it to remove original text
-      document.execCommand("selectAll", false, null);
-      document.execCommand("delete", false, null);
-
-      // Insert translated text as if typed by user
-      document.execCommand("insertText", false, translatedText);
-
-      // Dispatch 'input' event to inform WhatsApp of the change
-      replaceTag.dispatchEvent(new InputEvent("input", { bubbles: true }));
-
-      setTimeout(() => {
-        isTranslating = false;
-      }, 1000);
-    }
-  } catch (error) {
-    console.error("Translation error:", error);
-  }
-};
-
-const findParent = () => {
-  const targetNode = document.getElementsByClassName("_aigv _aigz")[1];
-  console.log(targetNode, "targetNode");
-  if (targetNode) {
-    const mutationObserver = new MutationObserver((mutations) => {
-      console.log(mutations, "mutations");
-    });
-
-    mutationObserver.observe(targetNode, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
-  } else {
-    console.log("targetNode not found");
-    setTimeout(findParent, 1000);
-  }
-};
-
-window.addEventListener("load", () => {
-  renderTranslateButton();
-  findParent();
-});
 // const target = document.getElementsByClassName(
 //   "x1hx0egp x6ikm8r x1odjw0f x1k6rcq7 x6prxxf"
 // )[0];

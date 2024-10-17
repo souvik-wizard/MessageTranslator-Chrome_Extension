@@ -2,25 +2,49 @@ console.log("Background script running...");
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translate") {
     const { text, targetLang } = request;
+    // Step 1: Detect Language
     fetch(
-      `https://microsoft-translator-text-api3.p.rapidapi.com/translate?to=${targetLang}&from=en&textType=plain`,
+      "https://microsoft-translator-text-api3.p.rapidapi.com/detectlanguage",
       {
         method: "POST",
         headers: {
           "x-rapidapi-key":
-            "b772aa655cmshd6b3aab9ad7d7e0p10a524jsn57a88a590afb",
+            "9ee2760673mshafa319965d7d169p1a861ejsn2d2611ead898",
           "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify([{ Text: text }]),
       }
     )
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        sendResponse({ translatedText: data[0].translations[0].text });
+      .then((detectionData) => {
+        const detectedLang = detectionData[0].language;
+
+        // Step 2: Perform Translation
+        fetch(
+          `https://microsoft-translator-text-api3.p.rapidapi.com/translate?to=${targetLang}&from=${detectedLang}&textType=plain`,
+          {
+            method: "POST",
+            headers: {
+              "x-rapidapi-key":
+                "9ee2760673mshafa319965d7d169p1a861ejsn2d2611ead898",
+              "x-rapidapi-host":
+                "microsoft-translator-text-api3.p.rapidapi.com",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify([{ Text: text }]),
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            sendResponse({ translatedText: data[0].translations[0].text });
+          })
+          .catch((err) => console.error("Translation Error:", err));
       })
-      .catch((err) => console.error("Translation Error:", err));
+      .catch((err) => console.error("Detection Error:", err));
+
     return true; // Keep the message channel open for sendResponse
   }
 });

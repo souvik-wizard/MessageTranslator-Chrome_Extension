@@ -7,7 +7,7 @@ const fetchLang = async () => {
         method: "GET",
         headers: {
           "x-rapidapi-key":
-            "b772aa655cmshd6b3aab9ad7d7e0p10a524jsn57a88a590afb",
+            "9ee2760673mshafa319965d7d169p1a861ejsn2d2611ead898",
           "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
         },
       }
