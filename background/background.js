@@ -2,7 +2,7 @@ console.log("Background script running...");
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translate") {
     const { text, targetLang } = request;
-    // Step 1: Detect Language
+    //Detect Language
     fetch(
       "https://microsoft-translator-text-api3.p.rapidapi.com/detectlanguage",
       {
@@ -20,8 +20,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .then((response) => response.json())
       .then((detectionData) => {
         const detectedLang = detectionData[0].language;
+        console.log(detectedLang, "detectedLang");
 
-        // Step 2: Perform Translation
+        //Perform Translation
         fetch(
           `https://microsoft-translator-text-api3.p.rapidapi.com/translate?to=${targetLang}&from=${detectedLang}&textType=plain`,
           {

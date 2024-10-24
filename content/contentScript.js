@@ -52,7 +52,8 @@ const renderTranslateButton = () => {
 const observeChatChanges = () => {
   const chatContainer = document.querySelector("#app");
   if (chatContainer) {
-    const observer = new MutationObserver(() => {
+    const observer = new MutationObserver((mutations) => {
+      console.log(mutations[0].target.innerText, "mutations");
       renderTranslateButton();
     });
 
@@ -64,7 +65,7 @@ const observeChatChanges = () => {
   }
 };
 
-// Translate input message function
+// This is kinda final solution , it is working fine for now adding the translated text in the next line along with the original message
 const translateInputMessage = async (messageText, targetLang) => {
   try {
     const response = await new Promise((resolve, reject) => {
@@ -86,14 +87,56 @@ const translateInputMessage = async (messageText, targetLang) => {
     }
 
     const translatedText = response.translatedText;
-    const inputField = document.querySelector(".x1hx0egp[data-tab='10']");
+    console.log(translatedText, "translatedText");
+
+    // Updated selector to specifically target the chat input field
+    const inputField = document.querySelector(
+      "div[contenteditable='true'][role='textbox'][aria-placeholder='Type a message']"
+    );
+    console.log(inputField, "inputField");
 
     if (inputField) {
+      // Focus the input field
       inputField.focus();
-      document.execCommand("selectAll", false, null);
-      document.execCommand("delete", false, null);
-      document.execCommand("insertText", false, translatedText);
-      inputField.dispatchEvent(new InputEvent("input", { bubbles: true }));
+
+      // Simulate pasting text
+      const pasteEvent = new ClipboardEvent("paste", {
+        bubbles: true,
+        cancelable: true,
+        clipboardData: new DataTransfer(),
+      });
+      pasteEvent.clipboardData.setData("text/plain", "\n" + translatedText);
+      inputField.dispatchEvent(pasteEvent);
+
+      // If the paste event doesn't work, fall back to setting innerHTML
+      if (!inputField.textContent.includes(translatedText)) {
+        const p = inputField.querySelector("p");
+        if (p) {
+          p.innerHTML = inputField.textContent; // preserve existing text
+          const br = document.createElement("br");
+          p.appendChild(br);
+          const translatedSpan = document.createElement("span");
+          translatedSpan.className = "selectable-text copyable-text";
+          translatedSpan.setAttribute("data-lexical-text", "true");
+          translatedSpan.textContent = translatedText;
+          p.appendChild(translatedSpan);
+        }
+      }
+
+      // Dispatch multiple events to ensure WhatsApp's state is updated
+      ["input", "change", "blur", "focus"].forEach((eventType) => {
+        inputField.dispatchEvent(new Event(eventType, { bubbles: true }));
+      });
+
+      // Move the cursor to the end
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(inputField);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      console.error("Chat input field not found");
     }
   } catch (error) {
     console.error("Translation error:", error);
@@ -102,9 +145,141 @@ const translateInputMessage = async (messageText, targetLang) => {
 
 // Start observing the DOM after the page is fully loaded
 window.addEventListener("load", () => {
-  renderTranslateButton(); // Render button for the first time
-  observeChatChanges(); // Start monitoring chat changes
+  renderTranslateButton();
+  observeChatChanges();
 });
+
+//This is working but inserting the translated text at the end of the message along with the original message--------------------
+// const translateInputMessage = async (messageText, targetLang) => {
+//   try {
+//     const response = await new Promise((resolve, reject) => {
+//       chrome.runtime.sendMessage(
+//         { action: "translate", text: messageText, targetLang },
+//         (response) => {
+//           if (chrome.runtime.lastError) {
+//             reject(chrome.runtime.lastError);
+//           } else {
+//             resolve(response);
+//           }
+//         }
+//       );
+//     });
+
+//     if (response.error) {
+//       console.error(response.error);
+//       return;
+//     }
+
+//     const translatedText = response.translatedText;
+//     console.log(translatedText, "translatedText");
+
+//     // Updated selector to specifically target the chat input field
+//     const inputField = document.querySelector(
+//       "div[contenteditable='true'][role='textbox'][aria-placeholder='Type a message']"
+//     );
+//     console.log(inputField, "inputField");
+
+//     if (inputField) {
+//       // Focus the input field
+//       inputField.focus();
+
+//       // Simulate pasting text
+//       const pasteEvent = new ClipboardEvent("paste", {
+//         bubbles: true,
+//         cancelable: true,
+//         clipboardData: new DataTransfer(),
+//       });
+//       pasteEvent.clipboardData.setData("text/plain", translatedText);
+//       inputField.dispatchEvent(pasteEvent);
+
+//       // If the paste event doesn't work, fall back to setting innerHTML
+//       if (!inputField.textContent.includes(translatedText)) {
+//         const p = inputField.querySelector("p");
+//         if (p) {
+//           const span = document.createElement("span");
+//           span.className = "selectable-text copyable-text";
+//           span.setAttribute("data-lexical-text", "true");
+//           span.textContent = translatedText;
+//           p.innerHTML = "";
+//           p.appendChild(span);
+//         }
+//       }
+
+//       // Dispatch multiple events to ensure WhatsApp's state is updated
+//       ["input", "change", "blur", "focus"].forEach((eventType) => {
+//         inputField.dispatchEvent(new Event(eventType, { bubbles: true }));
+//       });
+
+//       // Move the cursor to the end
+//       const selection = window.getSelection();
+//       const range = document.createRange();
+//       range.selectNodeContents(inputField);
+//       range.collapse(false);
+//       selection.removeAllRanges();
+//       selection.addRange(range);
+//     } else {
+//       console.error("Chat input field not found");
+//     }
+//   } catch (error) {
+//     console.error("Translation error:", error);
+//   }
+// };
+
+//This is working for single word ------------------------------------------------------------------------
+// const translateInputMessage = async (messageText, targetLang) => {
+//   try {
+//     const response = await new Promise((resolve, reject) => {
+//       chrome.runtime.sendMessage(
+//         { action: "translate", text: messageText, targetLang },
+//         (response) => {
+//           if (chrome.runtime.lastError) {
+//             reject(chrome.runtime.lastError);
+//           } else {
+//             resolve(response);
+//           }
+//         }
+//       );
+//     });
+
+//     if (response.error) {
+//       console.error(response.error);
+//       return;
+//     }
+
+//     const translatedText = response.translatedText;
+//     console.log(translatedText, "translatedText");
+
+//     const inputField = document.querySelector(
+//       "div[contenteditable='true'][role='textbox']"
+//     );
+//     console.log(inputField, "inputField");
+
+//     if (inputField) {
+//       // Focus the input field
+//       inputField.focus();
+
+//       // Select all existing content
+//       const selection = window.getSelection();
+//       const range = document.createRange();
+//       range.selectNodeContents(inputField);
+//       selection.removeAllRanges();
+//       selection.addRange(range);
+
+//       // Replace the selected content with the translated text
+//       document.execCommand("insertText", false, translatedText);
+
+//       // Dispatch 'input' event to trigger WhatsApp's state update
+//       inputField.dispatchEvent(new InputEvent("input", { bubbles: true }));
+
+//       // Optionally, move the cursor to the end
+//       range.collapse(false);
+//       selection.removeAllRanges();
+//       selection.addRange(range);
+//     }
+//   } catch (error) {
+//     console.error("Translation error:", error);
+//   }
+// };
 
 // const translateMessage = (messageText, targetLang) => {
 //   chrome.runtime.sendMessage(
