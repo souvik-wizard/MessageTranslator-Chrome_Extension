@@ -6,8 +6,8 @@ const fetchLang = async () => {
       {
         method: "GET",
         headers: {
-          "x-rapidapi-key":
-            "9ee2760673mshafa319965d7d169p1a861ejsn2d2611ead898",
+          "x-rapidapi-key": "YOUR_API_KEY",
+
           "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
         },
       }
@@ -27,16 +27,31 @@ const fetchLang = async () => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // Check if current tab is WhatsApp Web
+  chrome.storage.sync.get("preferredLang", (data) => {
+    console.log("Preferred language:", data);
+    const lang = data.preferredLang?.value;
+    const langContent = data.preferredLang?.text;
+    if (lang && langContent) {
+      document.getElementById(
+        "selectedlang"
+      ).innerText = `Your Selected Lang: ${langContent}`;
+    } else {
+      document.getElementById(
+        "selectedlang"
+      ).innerText = `No Language Selected yet!`;
+    }
+  });
+
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     const currentTab = tabs[0];
     const langs = document.querySelector("#languages");
-    const messageBox = document.getElementById("messageBox");
+    const no_langs = document.getElementById("no-lang");
+    const messageBox = document.getElementById("navigator-section");
     const saveBtn = document.getElementById("saveBtn");
     const languageSection = document.getElementById("languageSection");
+    const previoslySelectedLang = document.getElementById("prevselectedlang");
 
     if (currentTab.url.includes("https://web.whatsapp.com")) {
-      // If on WhatsApp Web, show the dropdown and button, hide the message
       saveBtn.style.display = "block";
       languageSection.style.display = "block";
       messageBox.style.display = "none";
@@ -52,27 +67,54 @@ document.addEventListener("DOMContentLoaded", async () => {
         for (let i = 0; i < langCodes.length; i++) {
           langs.innerHTML += `<option value="${langCodes[i]}">${langNames[i]}</option>`;
         }
+      } else {
+        languageSection.style.display = "none";
+        saveBtn.style.display = "none";
+        no_langs.innerText = "Failed to load languages :(";
+        no_langs.innerHTML +=
+          "<br><br>Please check your API key and try again.";
       }
     } else {
-      // If not on WhatsApp Web, hide the dropdown and button, show the message
       saveBtn.style.display = "none";
-      messageBox.style.display = "block";
+      messageBox.style.display = "flex";
       languageSection.style.display = "none";
-      messageBox.innerText = `Please open "web.whatsapp.com" to use the translator.`;
+      previoslySelectedLang.style.display = "none";
     }
   });
 });
 
 document.getElementById("saveBtn").addEventListener("click", () => {
-  const lang = document.getElementById("languages").value;
+  const langSelect = document.getElementById("languages");
+  const lang = langSelect.value;
+  const langContent = langSelect.options[langSelect.selectedIndex].text;
+
+  console.log("Lang content:", langContent);
   console.log("Selected language:", lang);
-  chrome.storage.sync.set({ preferredLang: lang }, () => {
-    console.log("Language saved:", lang);
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, {
-        action: "setLanguage",
-        lang: lang,
-      });
-    });
-  });
+
+  chrome.storage.sync.set(
+    { preferredLang: { text: langContent, value: lang } },
+    () => {
+      console.log("Language saved:", { text: langContent, value: lang });
+      const confirmation = document.getElementById("confirmation");
+      const selectedLang = document.getElementById("selectedlang");
+      const lastError = chrome.runtime.lastError;
+
+      if (lastError) {
+        console.error("Error saving language:", lastError);
+        confirmation.style.color = "#FF0000";
+        confirmation.innerText = "Something went wrong!";
+      } else {
+        console.log("Language saved:", lang);
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            action: "setLanguage",
+            lang: lang,
+          });
+        });
+        selectedLang.innerText = `Your Selected Lang: ${langContent}`;
+        confirmation.style.color = "#25D366";
+        confirmation.innerText = "Language preference saved!";
+      }
+    }
+  );
 });

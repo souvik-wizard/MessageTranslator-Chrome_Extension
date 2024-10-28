@@ -8,8 +8,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       {
         method: "POST",
         headers: {
-          "x-rapidapi-key":
-            "9ee2760673mshafa319965d7d169p1a861ejsn2d2611ead898",
+          "x-rapidapi-key": "YOUR_API_KEY",
           "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -28,8 +27,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           {
             method: "POST",
             headers: {
-              "x-rapidapi-key":
-                "9ee2760673mshafa319965d7d169p1a861ejsn2d2611ead898",
+              "x-rapidapi-key": "YOUR_API_KEY",
               "x-rapidapi-host":
                 "microsoft-translator-text-api3.p.rapidapi.com",
               "Content-Type": "application/json",
