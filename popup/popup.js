@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (lang && langContent) {
       document.getElementById(
         "selectedlang"
-      ).innerText = `Your Selected Lang: ${langContent}`;
+      ).innerText = `Selected Lang: ${langContent}`;
     } else {
       document.getElementById(
         "selectedlang"
@@ -111,7 +111,7 @@ document.getElementById("saveBtn").addEventListener("click", () => {
             lang: lang,
           });
         });
-        selectedLang.innerText = `Your Selected Lang: ${langContent}`;
+        selectedLang.innerText = `Selected Lang: ${langContent}`;
         confirmation.style.color = "#25D366";
         confirmation.innerText = "Language preference saved!";
       }
