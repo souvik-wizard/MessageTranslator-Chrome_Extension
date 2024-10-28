@@ -114,6 +114,9 @@ document.getElementById("saveBtn").addEventListener("click", () => {
         selectedLang.innerText = `Selected Lang: ${langContent}`;
         confirmation.style.color = "#25D366";
         confirmation.innerText = "Language preference saved!";
+        setTimeout(() => {
+          confirmation.innerText = "";
+        }, 3000);
       }
     }
   );
