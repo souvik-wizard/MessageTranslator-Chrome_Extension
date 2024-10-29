@@ -90,6 +90,7 @@ const translateMessage = async (messageText, targetLang, messageElement) => {
       font-size: small;
       border-radius: 8px;
       margin-bottom: 10px;
+      word-break: break-all;
     `;
 
     // Add SVG loader

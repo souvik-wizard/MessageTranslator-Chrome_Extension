@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       document.getElementById(
         "selectedlang"
-      ).innerText = `No Language Selected yet!`;
+      ).innerText = `No Language Selected yet! Please select a language from the dropdown below.`;
     }
   });
 
