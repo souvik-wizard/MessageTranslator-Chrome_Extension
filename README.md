@@ -6,7 +6,7 @@ This Chrome extension adds a Translate button to WhatsApp Web, enabling users to
 - Input Field Translation: Translate any message in the input field and send it in the chosen language.
 - Multiple Language Support: Set your preferred language from the dropdown, which will be used for all translations. (You can change further it if you want)
 ## Demo
-Include a GIF or screenshot of the extension in action.
+Coming soon...
 
 ## Installation
 - Clone the repository:
@@ -25,7 +25,6 @@ git clone https://github.com/souvik-wizard/MessageTranslator-Chrome_Extension.gi
     
     const apiKey = "ENTER YOUR API KEY HERE";
     ```
-  
 - Navigate to the Extensions page in Chrome by typing chrome://extensions in the address bar.
 
 - Enable Developer Mode by toggling the switch in the upper right corner.
@@ -34,7 +33,7 @@ git clone https://github.com/souvik-wizard/MessageTranslator-Chrome_Extension.gi
 
 - The extension should now appear in your list of extensions.
 
-- Click on it and pin it for faster access. (Optional)
+- Click on it and pin it for easy access. (Optional)
 
   ## Usage
 
@@ -45,5 +44,10 @@ git clone https://github.com/souvik-wizard/MessageTranslator-Chrome_Extension.gi
 - Click the Translate button to translate that specific message to the preferred language.
 - To translate the message in the input field before sending it, type a message you want to translate and then click the Translate button that appears in the right corner of the input field.
 
+## Known Issues
+- API Quotas: The free tier of most translation APIs has request limits. Upgrade to a paid plan if needed or create another account.
+- Limit in basic plan: <br> ![image](https://github.com/user-attachments/assets/8c29959f-7f50-445f-b5c8-9067d1141999)
+
+
 ## Contributing
-I welcome contributions! Fork the Repository if you'd like to contribute. :)
+I welcome contributions! Fork the Repository if you'd like to contribute :)
