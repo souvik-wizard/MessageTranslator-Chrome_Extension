@@ -3,6 +3,10 @@
   "name": "WhatsApp Translator",
   "version": "1.0",
   "description": "Translate WhatsApp chats and send messages in different languages",
+  "author": [ {
+  "name": "Souvik Das",
+  "email": "dassouvik.dev@gmail.com"
+ } ],
   "permissions": [
     "storage",
     "tabs",
