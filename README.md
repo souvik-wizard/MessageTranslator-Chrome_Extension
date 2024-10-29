@@ -9,17 +9,29 @@ This Chrome extension adds a Translate button to WhatsApp Web, enabling users to
 Include a GIF or screenshot of the extension in action.
 
 ## Installation
-1. Fork the Repository: If you'd like to contribute, start by forking this repository.
-2. or Clone the repository:
+- Clone the repository:
 
-```
-bash
+```bash
 git clone https://github.com/souvik-wizard/MessageTranslator-Chrome_Extension.git
 ```
-Navigate to the Extensions page in Chrome by typing chrome://extensions in the address bar.
+- Navigate to the Extensions page in Chrome by typing chrome://extensions in the address bar.
 
-Enable Developer Mode by toggling the switch in the upper right corner.
+- Enable Developer Mode by toggling the switch in the upper right corner.
 
-Click on 'Load unpacked' and select the folder where you cloned this repository.
+- Click on 'Load unpacked' and select the folder where you cloned this repository.
 
-The extension should now appear in your list of extensions.
+- The extension should now appear in your list of extensions.
+
+- Click on it and pin it for faster access. (Optional)
+
+  ## Usage
+
+- Open the extension by clicking on it and then click on Get Started button and you will be directly redirected [WhatsApp Web](https://web.whatsapp.com/) or manually open [WhatsApp Web](https://web.whatsapp.com/) and log in with your account.
+- After getting redirected to [WhatsApp Web](https://web.whatsapp.com/) open the extension and select your preferred language from the dropdown and hit save.
+- Open any chat.
+- Hover over any incoming or outgoing message. A Translate button will appear below the message.
+- Click the Translate button to translate that specific message to the preferred language.
+- To translate the message in the input field, click the main Translate button at the top of the chat window.
+
+## Contributing
+I welcome contributions! Fork the Repository if you'd like to contribute. :)
