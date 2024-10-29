@@ -2,13 +2,14 @@ console.log("Background script running...");
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translate") {
     const { text, targetLang } = request;
+    const apiKey = "ENTER YOUR API KEY HERE";
     //Detect Language
     fetch(
       "https://microsoft-translator-text-api3.p.rapidapi.com/detectlanguage",
       {
         method: "POST",
         headers: {
-          "x-rapidapi-key": "YOUR_API_KEY",
+          "x-rapidapi-key": apiKey,
           "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -27,7 +28,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           {
             method: "POST",
             headers: {
-              "x-rapidapi-key": "YOUR_API_KEY",
+              "x-rapidapi-key": apiKey,
               "x-rapidapi-host":
                 "microsoft-translator-text-api3.p.rapidapi.com",
               "Content-Type": "application/json",

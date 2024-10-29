@@ -1,12 +1,13 @@
 const fetchLang = async () => {
   try {
     console.log("Fetching languages...");
+    const apiKey = "ENTER YOUR API KEY HERE";
     const response = await fetch(
       "https://microsoft-translator-text-api3.p.rapidapi.com/languages",
       {
         method: "GET",
         headers: {
-          "x-rapidapi-key": "YOUR_API_KEY",
+          "x-rapidapi-key": apiKey,
 
           "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
         },
@@ -38,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       document.getElementById(
         "selectedlang"
-      ).innerText = `No Language Selected yet! Please select a language from the dropdown below.`;
+      ).innerText = `Please select a language from the dropdown below.`;
     }
   });
 
