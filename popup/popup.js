@@ -1,6 +1,6 @@
 const fetchLang = async () => {
   try {
-    console.log("Fetching languages...");
+    // console.log("Fetching languages...");
 
     const { apiKey } = await new Promise((resolve) => {
       chrome.storage.local.get("apiKey", resolve);
@@ -26,7 +26,7 @@ const fetchLang = async () => {
     }
 
     const data = await response.json();
-    console.log("Fetched languages:", data);
+    // console.log("Fetched languages:", data);
     return data.translation;
   } catch (error) {
     console.error("Failed to fetch languages:", error);
@@ -35,7 +35,7 @@ const fetchLang = async () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
   chrome.storage.sync.get("preferredLang", (data) => {
-    console.log("Preferred language:", data);
+    // console.log("Preferred language:", data);
     const lang = data.preferredLang?.value;
     const langContent = data.preferredLang?.text;
     if (lang && langContent) {
@@ -96,13 +96,13 @@ document.getElementById("saveBtn").addEventListener("click", () => {
   const lang = langSelect.value;
   const langContent = langSelect.options[langSelect.selectedIndex].text;
 
-  console.log("Lang content:", langContent);
-  console.log("Selected language:", lang);
+  // console.log("Lang content:", langContent);
+  // console.log("Selected language:", lang);
 
   chrome.storage.sync.set(
     { preferredLang: { text: langContent, value: lang } },
     () => {
-      console.log("Language saved:", { text: langContent, value: lang });
+      // console.log("Language saved:", { text: langContent, value: lang });
       const confirmation = document.getElementById("confirmation");
       const selectedLang = document.getElementById("selectedlang");
       const lastError = chrome.runtime.lastError;
@@ -112,7 +112,7 @@ document.getElementById("saveBtn").addEventListener("click", () => {
         confirmation.style.color = "#FF0000";
         confirmation.innerText = "Something went wrong!";
       } else {
-        console.log("Language saved:", lang);
+        // console.log("Language saved:", lang);
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           chrome.tabs.sendMessage(tabs[0].id, {
             action: "setLanguage",

@@ -39,10 +39,10 @@ const createTranslateButtonForMessage = (messageElement) => {
     const messageText =
       messageElement.querySelector(".selectable-text").innerText;
 
-    console.log(`Translating message: ${messageText}`);
+    // console.log(`Translating message: ${messageText}`);
     if (chrome.storage && chrome.storage.sync) {
       chrome.storage.sync.get("preferredLang", ({ preferredLang }) => {
-        console.log("Preferred language:", preferredLang.value);
+        // console.log("Preferred language:", preferredLang.value);
         if (preferredLang) {
           translateMessage(messageText, preferredLang.value, messageElement);
           translateButton.disabled = true;
@@ -128,7 +128,7 @@ const translateMessage = async (messageText, targetLang, messageElement) => {
       translatedSpan.innerText = "Translation failed";
     } else {
       const translatedText = response.translatedText;
-      console.log(translatedText, "translatedText");
+      // console.log(translatedText, "translatedText");
       translatedSpan.innerHTML = "";
       translatedSpan.innerText = translatedText;
     }
@@ -173,7 +173,7 @@ const createTranslateButton = () => {
   const messageContainer = document.getElementsByClassName(`_ak1r`)[0];
   translateButton.addEventListener("click", async () => {
     const messageText = messageContainer.children[0].innerText;
-    console.log(messageText, "messageText");
+    // console.log(messageText, "messageText");
 
     // Disable the button while fetching the translation
     translateButton.disabled = true;
@@ -183,7 +183,7 @@ const createTranslateButton = () => {
       if (chrome.storage && chrome.storage.sync) {
         chrome.storage.sync.get("preferredLang", ({ preferredLang }) => {
           if (preferredLang) {
-            console.log(preferredLang.value, "preferredLang");
+            // console.log(preferredLang.value, "preferredLang");
             translateInputMessage(messageText, preferredLang.value).finally(
               () => {
                 // Re-enable the button after translation is done
@@ -232,12 +232,12 @@ const translateInputMessage = async (messageText, targetLang) => {
     }
 
     const translatedText = response.translatedText;
-    console.log(translatedText, "translatedText");
+    // console.log(translatedText, "translatedText");
 
     const inputField = document.querySelector(
       "div[contenteditable='true'][role='textbox'][aria-placeholder='Type a message']"
     );
-    console.log(inputField, "inputField");
+    // console.log(inputField, "inputField");
 
     if (inputField) {
       inputField.focus();

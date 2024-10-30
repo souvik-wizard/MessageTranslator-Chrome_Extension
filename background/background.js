@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         .then((response) => response.json())
         .then((detectionData) => {
           const detectedLang = detectionData[0].language;
-          console.log(detectedLang, "detectedLang");
+          // console.log(detectedLang, "detectedLang");
 
           // Perform Translation
           fetch(
@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           )
             .then((response) => response.json())
             .then((data) => {
-              console.log(data);
+              // console.log(data);
               sendResponse({ translatedText: data[0].translations[0].text });
             })
             .catch((err) => console.error("Translation Error:", err));
