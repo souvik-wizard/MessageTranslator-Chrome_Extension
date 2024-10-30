@@ -5,6 +5,7 @@ This Chrome extension adds a Translate button to WhatsApp Web, enabling users to
 - Message Translation: Hover over any message to reveal a Translate button. Clicking it translates that message's text to the preferred language.
 - Input Field Translation: Translate any message in the input field and send it in the chosen language.
 - Multiple Language Support: Set your preferred language from the dropdown, which will be used for all translations. (You can change further it if you want)
+- Auto Language Detection: Automatically detects the original language of each message before translating, ensuring accurate translations without manual language selection.
 ## Demo
 Coming soon...
 
