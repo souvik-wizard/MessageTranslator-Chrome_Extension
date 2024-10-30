@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "WhatsApp Translator",
+  "name": "WordWave",
   "version": "1.0",
-  "description": "Translate WhatsApp chats and send messages in different languages",
+  "description": "Translate WhatsApp chats and also send messages in your preferred language.",
   "author": [ {
   "name": "Souvik Das",
   "email": "dassouvik.dev@gmail.com"
@@ -11,8 +11,7 @@
     "storage",
     "tabs",
     "activeTab",
-    "scripting",
-    "clipboardWrite"
+    "scripting"
   ],
 
   "background": {
@@ -29,7 +28,7 @@
   "content_scripts": [
     {
       "matches": ["https://web.whatsapp.com/*"],
-      "js": ["./content/contentScript.js"],
+      "js": ["./content/contentScript.js","config.js"],
       "run_at": "document_start"
     }
   ],

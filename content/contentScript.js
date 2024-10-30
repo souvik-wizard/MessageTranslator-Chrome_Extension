@@ -1,5 +1,4 @@
 console.log("Hello from contentScript.js");
-
 const debounce = (func, delay) => {
   let timeout;
   return function (...args) {

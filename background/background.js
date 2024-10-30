@@ -2,48 +2,55 @@ console.log("Background script running...");
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translate") {
     const { text, targetLang } = request;
-    const apiKey = "ENTER YOUR API KEY HERE";
-    //Detect Language
-    fetch(
-      "https://microsoft-translator-text-api3.p.rapidapi.com/detectlanguage",
-      {
-        method: "POST",
-        headers: {
-          "x-rapidapi-key": apiKey,
-          "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify([{ Text: text }]),
-      }
-    )
-      .then((response) => response.json())
-      .then((detectionData) => {
-        const detectedLang = detectionData[0].language;
-        console.log(detectedLang, "detectedLang");
 
-        //Perform Translation
-        fetch(
-          `https://microsoft-translator-text-api3.p.rapidapi.com/translate?to=${targetLang}&from=${detectedLang}&textType=plain`,
-          {
-            method: "POST",
-            headers: {
-              "x-rapidapi-key": apiKey,
-              "x-rapidapi-host":
-                "microsoft-translator-text-api3.p.rapidapi.com",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify([{ Text: text }]),
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            sendResponse({ translatedText: data[0].translations[0].text });
-          })
-          .catch((err) => console.error("Translation Error:", err));
-      })
-      .catch((err) => console.error("Detection Error:", err));
+    chrome.storage.local.get("apiKey", ({ apiKey }) => {
+      if (!apiKey) {
+        console.error("API key not found in storage.");
+        return;
+      }
+
+      // Detect Language
+      fetch(
+        "https://microsoft-translator-text-api3.p.rapidapi.com/detectlanguage",
+        {
+          method: "POST",
+          headers: {
+            "x-rapidapi-key": apiKey,
+            "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify([{ Text: text }]),
+        }
+      )
+        .then((response) => response.json())
+        .then((detectionData) => {
+          const detectedLang = detectionData[0].language;
+          console.log(detectedLang, "detectedLang");
+
+          // Perform Translation
+          fetch(
+            `https://microsoft-translator-text-api3.p.rapidapi.com/translate?to=${targetLang}&from=${detectedLang}&textType=plain`,
+            {
+              method: "POST",
+              headers: {
+                "x-rapidapi-key": apiKey,
+                "x-rapidapi-host":
+                  "microsoft-translator-text-api3.p.rapidapi.com",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify([{ Text: text }]),
+            }
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              sendResponse({ translatedText: data[0].translations[0].text });
+            })
+            .catch((err) => console.error("Translation Error:", err));
+        })
+        .catch((err) => console.error("Detection Error:", err));
+    });
 
     return true; // Keep the message channel open for sendResponse
   }

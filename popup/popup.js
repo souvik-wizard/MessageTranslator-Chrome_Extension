@@ -1,14 +1,21 @@
 const fetchLang = async () => {
   try {
     console.log("Fetching languages...");
-    const apiKey = "ENTER YOUR API KEY HERE";
+
+    const { apiKey } = await new Promise((resolve) => {
+      chrome.storage.local.get("apiKey", resolve);
+    });
+
+    if (!apiKey) {
+      throw new Error("API key not found in storage.");
+    }
+
     const response = await fetch(
       "https://microsoft-translator-text-api3.p.rapidapi.com/languages",
       {
         method: "GET",
         headers: {
           "x-rapidapi-key": apiKey,
-
           "x-rapidapi-host": "microsoft-translator-text-api3.p.rapidapi.com",
         },
       }
@@ -20,8 +27,7 @@ const fetchLang = async () => {
 
     const data = await response.json();
     console.log("Fetched languages:", data);
-    let languages = data.translation;
-    return languages;
+    return data.translation;
   } catch (error) {
     console.error("Failed to fetch languages:", error);
   }
@@ -71,6 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else {
         languageSection.style.display = "none";
         saveBtn.style.display = "none";
+        previoslySelectedLang.style.display = "none";
         no_langs.innerText = "Failed to load languages :(";
         no_langs.innerHTML +=
           "<br><br>Please check your API key and try again.";
