@@ -18,7 +18,7 @@ Coming soon...
 - Clone the repository:
 
 ```bash
-git clone https://github.com/souvik-wizard/MessageTranslator-Chrome_Extension.git
+git clone https://github.com/souvik-wizard/WordWave.git
 ```
 
 - Add your API key
