@@ -11,7 +11,8 @@ This Chrome extension adds a Translate button to WhatsApp Web, enabling users to
 
 ## Demo
 
-Coming soon...
+https://github.com/user-attachments/assets/c3883b73-b26f-49b1-a8e1-7c6bd6cd08be
+
 
 ## Installation
 
