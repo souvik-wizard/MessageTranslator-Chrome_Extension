@@ -113,12 +113,12 @@ document.getElementById("saveBtn").addEventListener("click", () => {
         confirmation.innerText = "Something went wrong!";
       } else {
         // console.log("Language saved:", lang);
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            action: "setLanguage",
-            lang: lang,
-          });
-        });
+        // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        //   chrome.tabs.sendMessage(tabs[0].id, {
+        //     action: "setLanguage",
+        //     lang: lang,
+        //   });
+        // });
         selectedLang.innerText = `Selected Lang: ${langContent}`;
         confirmation.style.color = "#25D366";
         confirmation.innerText = "Language preference saved!";
