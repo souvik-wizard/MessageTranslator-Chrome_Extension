@@ -3,14 +3,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translate") {
     const { text, targetLang } = request;
 
-    chrome.storage.local.get("apiKey", ({ apiKey }) => {
+    chrome.storage.local.get("apiKey", async ({ apiKey }) => {
       if (!apiKey) {
         console.error("API key not found in storage.");
         return;
       }
 
       // Detect Language
-      fetch(
+      await fetch(
         "https://microsoft-translator-text-api3.p.rapidapi.com/detectlanguage",
         {
           method: "POST",
@@ -59,7 +59,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.tabs.onUpdated.addListener((tabId, tab) => {
   if (tab.url && tab.url.includes("web.whatsapp.com")) {
     chrome.pageAction.show(tabId);
-
     chrome.tabs.sendMessage(tabId, { action: "showIcon" });
   }
 });
