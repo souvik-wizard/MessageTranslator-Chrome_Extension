@@ -1,11 +1,4 @@
 console.log("Hello from contentScript.js");
-const debounce = (func, delay) => {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), delay);
-  };
-};
 
 const createTranslateButtonForMessage = (messageElement) => {
   if (messageElement.querySelector(".translate-msg-btn")) {
@@ -301,6 +294,14 @@ const observeChatChanges = () => {
       subtree: true,
     });
   }
+};
+
+const debounce = (func, delay) => {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
 };
 
 const debouncedRenderTranslateButton = debounce(renderTranslateButton, 200);
